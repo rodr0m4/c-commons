@@ -27,16 +27,16 @@ describe(list) {
       }
     }
 
-  //   subdesc("adding/removing operations") {
-  //     it("elements can be added at the tail") {
-  //       int zero = 0; // This should be mallocd
-  //
-  //       list_add(list, &zero);
-  //
-  //       asserteq(list->current, 1);
-  //       asserteq(list->members[0], &zero);
-  //     }
-  //   }
+    subdesc("adding/removing operations") {
+      it("elements can be added at the tail") {
+        int zero = 0; // This should be mallocd
+
+        list_add(list, &zero);
+
+        asserteq(list->current, 1);
+        asserteq(list->members[0], &zero);
+      }
+    }
   }
 }
 
