@@ -27,7 +27,7 @@ describe(list) {
       }
     }
 
-    subdesc("adding/removing operations") {
+    subdesc("#add operations") {
       it("elements can be added at the tail") {
         int zero = 0; // This should be mallocd
 
@@ -35,6 +35,24 @@ describe(list) {
 
         asserteq(list->current, 1);
         asserteq(list->members[0], &zero);
+      }
+
+      it("When there is no space left, it will allocate new memory") {
+        int zero = 0;
+        int one = 1;
+
+        list_t* lil_list = new_list_with_size(1);
+        list_add(lil_list, &zero);
+        list_add(lil_list, &one);
+
+        asserteq(*(int*)(lil_list->members[0]), zero);
+
+        asserteq(lil_list->size, 2);
+
+        asserteq(*(int*)(lil_list->members[0]), zero);
+        asserteq(*(int*)(lil_list->members[1]), one);
+
+        destroy_list(&lil_list);
       }
     }
   }

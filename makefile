@@ -4,9 +4,11 @@ TESTFLAGS=
 SRCDIR=src
 TESTDIR=tests
 BUILDDIR=target
-PROGNAME=c-commons
+PROGNAME=main
 ALLBESIDESMAIN=$(shell find $(SRCDIR) -iname "*.c" -not -iname "$(PROGNAME).c" | tr '\n' ' ')
 
+expand:
+	$(CC) -E -I$(SRCDIR) $(SRCDIR)/*.c
 build:
 	$(CC) $(CFLAGS) -g -o $(BUILDDIR)/$(PROGNAME) -I$(SRCDIR) $(SRCDIR)/*.c 
 build-test:
@@ -14,7 +16,7 @@ build-test:
 run:
 	./$(BUILDDIR)/$(PROGNAME)
 run-valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./$(BUILDDIR)/$(PROGNAME)
+	valgrind --verbose --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./$(BUILDDIR)/$(PROGNAME)
 run-test:
 	./$(BUILDDIR)/tests
 run-test-valgrind:

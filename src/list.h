@@ -11,6 +11,9 @@ typedef struct {
   void**  members;
 } list_t;
 
+#define each(type, list) for(int ____i = 0, type it = list_is_empty(list) ? 0 : *((type*)list->members[0]); list->size == 0 || ____i < list->size; ____i += 1, it = *((type*)list->members[____i]))
+
+
 /// Constructors
 list_t* new_list();
 list_t* new_list_with_size(int size);

@@ -25,6 +25,18 @@ boolean list_is_empty(list_t* list) {
 }
 
 void list_add(list_t* list, void* element) {
+  if (list->current == list->size) {
+    // We need to allocate more space.
+    int new_size = list->size * 2;
+    void** new_array = malloc(sizeof(void*) * new_size);
+
+    for(int i = 0; i < list->size; i += 1) new_array[i] = list->members[i];
+
+    free(list->members);
+    list->members = new_array;
+    list->size = new_size;
+  }
+
   list->members[list->current] = element;
   list->current += 1;
 }
@@ -44,7 +56,7 @@ void destroy_list_with_destructor(list_t** ptr_to_list, void(*destructor)(void*)
     destructor(list->members[i]);
   }
 
-  //free(list->members); // ????
+  free(list->members); 
   free(list);
 
   list = NULL;
