@@ -22,6 +22,7 @@ array_t* ___array_empty() {
 
 array_t* ___array_from(void*(*copy_function)(void*), int count, void* values[]){
   array_t* this = ___array_empty();
+  this->count = count;
 
   if (!this) return null;
 
