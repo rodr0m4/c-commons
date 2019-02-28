@@ -50,6 +50,7 @@ void ___array_destroy_with_destructor(array_t** ptr_to_array, void(*destructor)(
     destructor(self->elements[i]);
   }
 
+  free(self->elements);
   free(self);
 
   *ptr_to_array = null;
