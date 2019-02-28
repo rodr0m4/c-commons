@@ -11,7 +11,7 @@ typedef struct array_adt {
   void** elements;  // Backing real array_t
 } array_t;
 
-DEF(Array) {
+defm(Array) {
   /// Module-level members 
   const int initial_capacity;
 
@@ -68,7 +68,7 @@ void ___array_destroy(array_t** ptr_to_array);
 void ___array_destroy_with_free(array_t** ptr_to_array);
 void ___array_destroy_with_destructor(array_t** ptr_to_array, void(*destructor)(void*));
 
-IMPL(Array) {
+impl(Array) {
   .initial_capacity = 32, 
   
   .empty = ___array_empty,
