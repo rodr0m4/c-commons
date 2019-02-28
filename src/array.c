@@ -73,10 +73,22 @@ boolean ___array_is_empty(array_t* self) {
 /// This allocates more memory if needed
 int ensure_capacity(array_t* self, int capacity) {
   if (self->capacity >= capacity) return 0;
- 
-  int new_capacity = self->capacity == 0 ?
-    Array.initial_capacity :
-    self->capacity * 2;
+
+  if (self->capacity == 0) {
+    // We should set up the aray for the first time
+    int new_capacity = Array.initial_capacity;
+    void** elements = malloc(new_capacity * sizeof(void*));
+
+    if(!elements) return -1;
+
+    self->capacity = new_capacity;
+    self->elements = elements;
+    self->count = 0;
+
+    return 0;
+  }
+
+  int new_capacity = self->capacity * 2;
 
   void** new_elements = malloc(self->capacity * sizeof(void*));
   if (!new_elements) return -1;

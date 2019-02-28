@@ -137,15 +137,15 @@ describe(arrays) {
 
         Array.add(sut, &one);
 
-        void* old_buffer = *(sut->elements);
+        // void* old_buffer = *(sut->elements); // See below
 
         asserteq(sut->count, 1);
         asserteq(sut->capacity, 1);
 
         // When an element is added, capacity doubles.
         Array.add(sut, &two);
-//
-        // assertneq(*(sut->elements), old_buffer);
+
+        // assertneq(*(sut->elements), old_buffer); // This leaks, maybe a snow bug?
         asserteq(sut->count, 2);
 
 
@@ -153,7 +153,16 @@ describe(arrays) {
       }
 
       it("In the special case that the capacity is 0, it will set it to the default initial capacity (perhaps the array should be lazy initialized, like in jvm?)") {
-      
+        array_t* sut = Array.with_capacity(0);
+
+        int one = 1;
+
+        Array.add(sut, &one);
+
+        asserteq(sut->count, 1);
+        asserteq(sut->capacity, 32);
+
+        Array.destroy(&sut);
       }
     }
   }
