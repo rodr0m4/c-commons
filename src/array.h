@@ -5,6 +5,7 @@
 #include "boolean.h"
 
 typedef struct array_adt {
+  // Should arrays bigger than an int be allowed? maybe using a uint64 or shomething? 
   int capacity;     // Number of elements that the array_t can contain before enlarging
   int count;        // Number of elements present in the array_t
   

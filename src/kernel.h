@@ -2,7 +2,7 @@
 #define __KERNEL_H__
 
 // Module system stuff (and it's a dumb warning)
-#pragma clang diagnostic ignored "-Wunused-const-variable"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 
 #define null (void*) 0
 

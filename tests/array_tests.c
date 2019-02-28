@@ -77,9 +77,84 @@ describe(arrays) {
         array_t* sut = Array.with_capacity(10);
 
         asserteq(sut->capacity, 10);
-
+        
         Array.destroy(&sut);
       } 
+    }
+  }
+
+  subdesc("'Instance methods'") {
+    array_t* sut;
+    before_each() {
+      sut = Array.empty();
+    }
+
+    after_each() {
+      Array.destroy(&sut);
+    }
+
+    subdesc("Array::is_empty") {
+      it("Returns true when the array does not have elements") {
+        assert(Array.is_empty(sut));
+      }
+
+      it("Returns false otherwise") {
+        int one = 1;
+        sut->elements[0] = &one;
+        sut->count += 1;
+
+        assert(!Array.is_empty(sut));
+      }
+
+      it("Of course, as it can only check count, you can lie to it and not add anything") {
+        sut->count += 34;
+
+        assert(!Array.is_empty(sut));
+      }
+    }
+
+    subdesc("Array::add") {
+      it("Adds the element to the tail") {
+        array_t* sut = Array.empty();
+
+        int one = 1;
+
+        asserteq(sut->count, 0);
+
+        Array.add(sut, &one);
+
+        asserteq(sut->count, 1);
+        asserteq(sut->elements[0], &one);
+
+        Array.destroy(&sut);
+      }
+
+      it("It ensures enlarging the capacity of the buffer to hold every element, cleaning the old one each time") {
+        array_t* sut = Array.with_capacity(1);
+
+        int one = 1;
+        int two = 2;
+
+        Array.add(sut, &one);
+
+        void* old_buffer = *(sut->elements);
+
+        asserteq(sut->count, 1);
+        asserteq(sut->capacity, 1);
+
+        // When an element is added, capacity doubles.
+        Array.add(sut, &two);
+//
+        // assertneq(*(sut->elements), old_buffer);
+        asserteq(sut->count, 2);
+
+
+        Array.destroy(&sut);
+      }
+
+      it("In the special case that the capacity is 0, it will set it to the default initial capacity (perhaps the array should be lazy initialized, like in jvm?)") {
+      
+      }
     }
   }
 
