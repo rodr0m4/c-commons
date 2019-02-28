@@ -1,5 +1,5 @@
-#ifndef __C_COMMONS__
-#define __C_COMMONS__
+#ifndef __KERNEL_H__
+#define __KERNEL_H__
 
 #define null 0
 
@@ -8,5 +8,8 @@ void noop(void* _);
 
 /// It takes anything as input and returns it (identity function).
 void* id(void* x);
+
+#define DEF(name) struct name ## Module
+#define IMPL(name) static const struct name ## Module name =
 
 #endif

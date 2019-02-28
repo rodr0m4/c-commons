@@ -1,5 +1,5 @@
-#ifndef __BOOL_H_
-#define __BOOL_H_
+#ifndef __BOOLEAN_H_
+#define __BOOLEAN_H_
 
 typedef char boolean;
 
