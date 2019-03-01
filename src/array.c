@@ -81,6 +81,10 @@ int ensure_capacity(array_t* self, int capacity) {
 
     if(!elements) return -1;
 
+    // @Improvement
+    // Is this dangerous?
+    free(self->elements);
+
     self->capacity = new_capacity;
     self->elements = elements;
     self->count = 0;
