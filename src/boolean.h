@@ -1,7 +1,7 @@
 #ifndef __BOOLEAN_H_
 #define __BOOLEAN_H_
 
-typedef char boolean;
+typedef char bool_t;
 
 #define false 0
 #define true 1

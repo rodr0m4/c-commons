@@ -4,7 +4,7 @@
 #include "kernel.h"
 #include "array.h"
 
-array_t* ___array_with_capacity(int capacity) {
+array_t* array_with_capacity(uint32_t capacity) {
   array_t* this = (array_t*) malloc(sizeof(array_t));
 
   if (!this) return null;
@@ -16,12 +16,12 @@ array_t* ___array_with_capacity(int capacity) {
   return this;
 }
 
-array_t* ___array_empty() {
-  return ___array_with_capacity(Array.initial_capacity);
+array_t* array_empty() {
+  return array_with_capacity(ARRAY_INITIAL_CAPACITY);
 }
 
-array_t* ___array_from(void*(*copy_function)(void*), int count, void* values[]){
-  array_t* this = ___array_empty();
+array_t* array_from(void*(*copier)(void*), uint32_t count, void* values[]){
+  array_t* this = array_empty();
   this->count = count;
 
   if (!this) return null;
@@ -30,17 +30,17 @@ array_t* ___array_from(void*(*copy_function)(void*), int count, void* values[]){
   for (int i=0; i < count; i += 1) {
     element = values[i]; 
 
-    this->elements[i] = copy_function(element);
+    this->elements[i] = copier(element);
   }
   
   return this;
 }
 
-array_t* ___array_of(int count, void* values[]) {
-  return ___array_from(id, count, values);
+array_t* array_of(uint32_t count, void* values[]) {
+  return array_from(id, count, values);
 }
 
-void ___array_destroy_with_destructor(array_t** ptr_to_array, void(*destructor)(void*)) {
+void array_destroy_with_destructor(array_t** ptr_to_array, void(*destructor)(void*)) {
   if (!ptr_to_array) return;
 
   array_t* self = *ptr_to_array;
@@ -57,16 +57,16 @@ void ___array_destroy_with_destructor(array_t** ptr_to_array, void(*destructor)(
   *ptr_to_array = null;
 }
 
-void ___array_destroy(array_t** ptr_to_array) {
-  ___array_destroy_with_destructor(ptr_to_array, noop);
+void array_destroy(array_t** ptr_to_array) {
+  array_destroy_with_destructor(ptr_to_array, noop);
 }
 
-void ___array_destroy_with_free(array_t** ptr_to_array) {
-  ___array_destroy_with_destructor(ptr_to_array, free);
+void array_destroy_with_free(array_t** ptr_to_array) {
+  array_destroy_with_destructor(ptr_to_array, free);
 }
 
 
-boolean ___array_is_empty(array_t* self) {
+bool_t array_is_empty(array_t* self) {
   return self->count == 0;
 }
 
@@ -76,7 +76,7 @@ int ensure_capacity(array_t* self, int capacity) {
 
   if (self->capacity == 0) {
     // We should set up the aray for the first time
-    int new_capacity = Array.initial_capacity;
+    int new_capacity = ARRAY_INITIAL_CAPACITY;
     void** elements = malloc(new_capacity * sizeof(void*));
 
     if(!elements) return -1;
@@ -109,7 +109,7 @@ int ensure_capacity(array_t* self, int capacity) {
   return 0;
 }
 
-int ___array_add(array_t* self, void* element) {
+int array_add(array_t* self, void* element) {
   if (ensure_capacity(self, self->count + 1) != 0) return -1; // We failed allocating more memory :(
   
   self->elements[self->count] = element;
