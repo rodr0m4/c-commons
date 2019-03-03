@@ -1,7 +1,27 @@
 #include <stdlib.h>
 
+#include "../src/boolean.h"
 #include "../src/array.h"
 #include "snow.h"
+
+// Helper functions (no nested functions nor closures in ANSI C)
+int* copy_int(int* payload) {
+  if (!payload) return null;
+
+  int* new_int = (int*) malloc(sizeof(int));
+
+  if (!new_int) return null;
+
+  *new_int = *payload;
+
+  return new_int;
+}
+
+// Find a better way to mock?
+bool_t was_called = false;
+void effectful_destructor(void* x) {
+  was_called = true;
+}
 
 describe(arrays) {
   array_t* sut;
@@ -42,18 +62,6 @@ describe(arrays) {
 
     subdesc("Array::from") {
       it("Creates the array copying the given elements") {
-        int* copy_int(int* payload) {
-          if (!payload) return null;
-
-          int* new_int = (int*) malloc(sizeof(int));
-
-          if (!new_int) return null;
-
-          *new_int = *payload;
-
-          return new_int;
-        }
-
         int one = 1;
         int two = 2;
 
@@ -187,13 +195,6 @@ describe(arrays) {
     }
 
     it("Array::destroy_with_destructor calls the custom destructor") {
-      // Find a better way to mock?
-      bool_t was_called = false;
-      
-      void effectful_destructor(void* x) {
-        was_called = true;
-      }
-
       int one = 1;
       int* primitive[] = { &one };
 
