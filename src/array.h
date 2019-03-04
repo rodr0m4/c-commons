@@ -31,6 +31,8 @@ array_t* array_shallow_copy(array_t* source);
 array_t* array_deep_copy(array_t* source, void* (*copier)(void*));
 
 bool_t array_is_empty(array_t* self);
+
+int array_insert(array_t* self, void* element, uint32_t index);
 int array_add(array_t* self, void* element);
 
 // index is signed so we can have access from the back of the array
@@ -45,11 +47,12 @@ void* array_raw_get(array_t* self, int32_t index);
 //
 // The if(true) looks dumb, but it is for generating it inside a new scope :)
 #define foreach(type, self, block)                                            \
-  if (!array_is_empty(self))                                                  \
+  if (!array_is_empty(self)) {                                                \
     if (true) {                                                               \
       type* it = array_get(self, type, 0);                                    \
       for (int i = 0; i < self->count; i += 1, it = array_get(self, type, i)) \
         block                                                                 \
-    }
+    }                                                                         \
+  }
 
 #endif

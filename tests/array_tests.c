@@ -167,6 +167,24 @@ describe(arrays) {
 
         array_destroy(&sut);
       }
+
+      it("should add the element to the desired index in the middle of the "
+         "array, and shifts right the tail from there") {
+        array_t *sut = array_empty();
+
+        int three = 3;
+
+        array_add(sut, &one);
+        array_add(sut, &two);
+
+        array_insert(sut, &three, 0);
+
+        asserteq(sut->elements[0], &three);
+        asserteq(*((int *)sut->elements[1]), one);
+        asserteq(sut->elements[2], &two);
+
+        array_destroy(&sut);
+      }
     }
 
     subdesc("Array::add") {

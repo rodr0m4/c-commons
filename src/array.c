@@ -165,9 +165,31 @@ int ensure_capacity(array_t* self, int capacity) {
   return 0;
 }
 
+void _shift_right_from(array_t* self, uint32_t index) {
+  // We traverse from back to front because we do not want to erase information
+  for (int i = self->count; i > index; i -= 1) {
+    self->elements[i + 1] = self->elements[i];
+  }
+}
+
+int array_insert(array_t* self, void* element, uint32_t index) {
+  if (index == self->count) {
+    // We are allocating to the tail, so no defragmenting :)
+    return array_add(self, element);
+  }
+
+  if (ensure_capacity(self, self->count + 1) != 0) return -1;
+
+  _shift_right_from(self, index);
+  self->elements[index] = element;
+
+  return 0;
+}
+
 int array_add(array_t* self, void* element) {
-  if (ensure_capacity(self, self->count + 1) != 0)
+  if (ensure_capacity(self, self->count + 1) != 0) {
     return -1;  // We failed allocating more memory :(
+  }
 
   self->elements[self->count] = element;
   self->count += 1;
