@@ -35,18 +35,31 @@ array_t* array_with_capacity(uint32_t capacity);
 /// Destroys the array, calling it's destructor on each element
 void array_destroy(array_t** ptr_to_array);
 
+/// Makes a copy of the array, only copying references
 array_t* array_shallow_copy(array_t* source);
+
+/// Makes a copy of the array, copies the value of each element with the given copier
 array_t* array_deep_copy(array_t* source, void* (*copier)(void*));
 
+/// Checks if array has no elements
 bool_t array_is_empty(array_t* self);
 
+/// @Improvement: Handle negative indexes, just like get :)
+/// Inserts an element on the given index. Prevents fragmentation
 int array_insert(array_t* self, void* element, int32_t index);
+
+/// Adds an element to the end of the array
+/// Equivalent to array_insert(self, element, self->count)
 int array_add(array_t* self, void* element);
 
-// index is signed so we can have access from the back of the array
+/// Gets the reference (as a void*) to the element in the given index. Can access negative indexes (a-la-ruby)
+/// index is signed so we can have access from the back of the array
 void* array_raw_get(array_t* self, int32_t index);
+
+/// Calls array_raw_get and casts it. It does not reference it.
 #define array_get(self, type, index) (type*)array_raw_get(self, index)
 
+/// Foreach macro :)
 // @Improvement
 // - Find a way to not pass the block, so it can be called like foreach(...) {
 // it }
