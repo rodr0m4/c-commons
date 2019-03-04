@@ -197,6 +197,40 @@ describe(arrays) {
         }
       }
     }
+
+    subdesc("Array::foreach") {
+      it("should execute the given piece of code") {
+        array_add(sut, &one);
+        array_add(sut, &two);
+
+        int expected = 1;
+        
+        foreach(int, sut, {
+          asserteq(*it, expected);
+          expected += 1;
+        })
+      }
+
+      it("should not execute the code on empty arrays") {
+        bool_t should_be_true = true;
+
+        foreach(int, sut, {
+          should_be_true = false;
+        })
+
+        // Because the foreach was not executed, this assertion passes
+        assert(should_be_true);
+
+        array_add(sut, &one);
+
+        foreach(int, sut, {
+          should_be_true = false;
+        })
+
+        // Because there is an element in the array, the variable is modified.
+        assert(!should_be_true);
+      }
+    }
   }
 
   subdesc("Array destruction") {
