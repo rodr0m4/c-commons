@@ -28,7 +28,10 @@ describe(arrays) {
   array_t *sut;
 
   subdesc("Array creation") {
-    before_each() { sut = array_empty(); }
+    before_each() { 
+      sut = array_empty();
+      sut->destructor = noop;
+    }
 
     after_each() { array_destroy(&sut); }
 
@@ -48,6 +51,7 @@ describe(arrays) {
         int *primitive[] = {&one};
 
         array_t *sut = array_of(1, primitive);
+        sut->destructor = noop;
 
         asserteq(sut->count, 1);
         asserteq(sut->elements[0], &one);
@@ -71,13 +75,14 @@ describe(arrays) {
                  "Elements should have been copied!");
 
         // Cleanup because we do not want to leak
-        array_destroy_with_free(&sut);
+        array_destroy_with_destructor(&sut, free);
       }
     }
 
     subdesc("Array::with_capacity") {
       it("Creates the array with the given capacity (should it be fixed?)") {
         array_t *sut = array_with_capacity(10);
+        sut->destructor = noop;
 
         asserteq(sut->capacity, 10);
 
@@ -88,7 +93,10 @@ describe(arrays) {
 
   subdesc("'Instance methods'") {
     array_t *sut;
-    before_each() { sut = array_empty(); }
+    before_each() { 
+      sut = array_empty();
+      sut->destructor = noop;
+    }
 
     after_each() { array_destroy(&sut); }
 
@@ -98,6 +106,7 @@ describe(arrays) {
         array_add(sut, &one);
 
         array_t *shallow_copy = array_shallow_copy(sut);
+        shallow_copy->destructor = noop;
 
         asserteq(shallow_copy->capacity, sut->capacity);
         asserteq(shallow_copy->count, sut->count);
@@ -133,7 +142,7 @@ describe(arrays) {
           }
         }
 
-        array_destroy_with_free(&deep_copy);
+        array_destroy_with_destructor(&deep_copy, free);
       }
     }
 
@@ -160,6 +169,7 @@ describe(arrays) {
     subdesc("Array:insert") {
       it("should add the element to the given index") {
         array_t *sut = array_empty();
+        sut->destructor = noop;
 
         array_insert(sut, &one, 0);
 
@@ -171,6 +181,7 @@ describe(arrays) {
       it("should add the element to the desired index in the middle of the "
          "array, and shifts right the tail from there") {
         array_t *sut = array_empty();
+        sut->destructor = noop;
 
         int three = 3;
 
@@ -190,6 +201,7 @@ describe(arrays) {
     subdesc("Array::add") {
       it("Adds the element to the tail") {
         array_t *sut = array_empty();
+        sut->destructor = noop;
         array_add(sut, &one);
 
         asserteq(sut->count, 1);
@@ -201,6 +213,7 @@ describe(arrays) {
       it("ensures enlarging the capacity of the buffer to hold every element, "
          "cleaning the old one each time") {
         array_t *sut = array_with_capacity(1);
+        sut->destructor = noop;
         array_add(sut, &one);
 
         // void* old_buffer = *(sut->elements); // See below
@@ -222,6 +235,7 @@ describe(arrays) {
          "default initial capacity (perhaps the array should be lazy "
          "initialized, like in jvm?)") {
         array_t *sut = array_with_capacity(0);
+        sut->destructor = noop;
 
         // int one = 1;
 
@@ -307,19 +321,6 @@ describe(arrays) {
       array_destroy(&sut);
 
       asserteq(sut, null);
-    }
-
-    it("Array::destroy_with_free destroys and calls free on each of the "
-       "elements") {
-      int *something = (int *)malloc(sizeof(int));
-      int *primitive[] = {something};
-
-      array_t *sut = array_of(1, primitive);
-
-      array_destroy_with_free(&sut);
-
-      asserteq(sut, null);  // This does not assert nothing really. You should
-                            // check valgrind output (0 bytes lost 😊)
     }
 
     it("Array::destroy_with_destructor calls the custom destructor") {

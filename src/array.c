@@ -13,6 +13,7 @@ array_t* array_with_capacity(uint32_t capacity) {
   self->capacity = capacity;
   self->count = 0;
   self->elements = calloc(capacity, sizeof(void*));
+  self->destructor = ARRAY_DEFAULT_DESTRUCTOR;
 
   if (!self->elements) {
     free(self);
@@ -26,7 +27,9 @@ array_t* array_empty() { return array_with_capacity(ARRAY_INITIAL_CAPACITY); }
 
 array_t* array_from(void* (*copier)(void*), uint32_t count, void* values[]) {
   array_t* self = array_empty();
+  
   self->count = count;
+  self->destructor = ARRAY_DEFAULT_DESTRUCTOR;
 
   if (!self) return null;
 
@@ -44,12 +47,9 @@ array_t* array_of(uint32_t count, void* values[]) {
   return array_from(id, count, values);
 }
 
-void array_destroy_with_destructor(array_t** ptr_to_array,
-                                   void (*destructor)(void*)) {
+void array_destroy_with_destructor(array_t** ptr_to_array, void (*destructor)(void*)) {
   if (!ptr_to_array) return;
-
   array_t* self = *ptr_to_array;
-
   if (!self) return;
 
   for (int i = 0; i < self->count; i += 1) {
@@ -63,11 +63,11 @@ void array_destroy_with_destructor(array_t** ptr_to_array,
 }
 
 void array_destroy(array_t** ptr_to_array) {
-  array_destroy_with_destructor(ptr_to_array, noop);
-}
+  if (!ptr_to_array) return;
+  array_t* self = *ptr_to_array;
+  if (!self) return;
 
-void array_destroy_with_free(array_t** ptr_to_array) {
-  array_destroy_with_destructor(ptr_to_array, free);
+  array_destroy_with_destructor(ptr_to_array, self->destructor);
 }
 
 // @Improvement
