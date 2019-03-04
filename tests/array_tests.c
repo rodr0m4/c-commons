@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "../src/boolean.h"
+#include "../src/kernel.h"
 #include "../src/array.h"
 #include "snow.h"
 

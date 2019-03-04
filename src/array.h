@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "kernel.h"
-#include "boolean.h"
 
 typedef struct array_adt {
   // Should arrays bigger than an int be allowed? maybe using a uint64 or shomething? 
