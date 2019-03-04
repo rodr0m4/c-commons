@@ -23,6 +23,9 @@ void effectful_destructor(void* x) {
   was_called = true;
 }
 
+int one = 1;
+int two = 2;
+
 describe(arrays) {
   array_t* sut;
 
@@ -48,7 +51,6 @@ describe(arrays) {
         // There's a lot of ceremony in declaring the count + primitive array
         // Maybe have some value type { .count, .raw } for defining arrays? 
         // (AKA fat pointer :P)
-        int one = 1;
         int* primitive[] = { &one };
 
         array_t* sut = array_of(1, primitive);
@@ -62,9 +64,6 @@ describe(arrays) {
 
     subdesc("Array::from") {
       it("Creates the array copying the given elements") {
-        int one = 1;
-        int two = 2;
-
         int* primitive[] = { &one, &two };
 
         array_t* sut = array_from(copy_int, 2, primitive);
@@ -107,7 +106,6 @@ describe(arrays) {
       }
 
       it("Returns false otherwise") {
-        int one = 1;
         sut->elements[0] = &one;
         sut->count += 1;
 
@@ -125,8 +123,6 @@ describe(arrays) {
       it("Adds the element to the tail") {
         array_t* sut = array_empty();
 
-        int one = 1;
-
         asserteq(sut->count, 0);
 
         array_add(sut, &one);
@@ -137,12 +133,8 @@ describe(arrays) {
         array_destroy(&sut);
       }
 
-      it("It ensures enlarging the capacity of the buffer to hold every element, cleaning the old one each time") {
+      it("ensures enlarging the capacity of the buffer to hold every element, cleaning the old one each time") {
         array_t* sut = array_with_capacity(1);
-
-        int one = 1;
-        int two = 2;
-
         array_add(sut, &one);
 
         // void* old_buffer = *(sut->elements); // See below
@@ -163,7 +155,7 @@ describe(arrays) {
       it("In the special case that the capacity is 0, it will set it to the default initial capacity (perhaps the array should be lazy initialized, like in jvm?)") {
         array_t* sut = array_with_capacity(0);
 
-        int one = 1;
+        // int one = 1;
 
         array_add(sut, &one);
 
@@ -171,6 +163,38 @@ describe(arrays) {
         asserteq(sut->capacity, 32);
 
         array_destroy(&sut);
+      }
+    }
+
+    subdesc("Array::get") {
+      it("should fetch the element from the array and cast it, without dereferencing") {
+        array_add(sut, &one);
+        asserteq(*array_get(sut, int, 0), one);
+      }
+
+      it("should fetch the element from the array from the tail on negative indexes, a-la-ruby") {
+        array_add(sut, &one);
+        array_add(sut, &two);
+
+        asserteq(*array_get(sut, int, -1), two); // -1 is last
+        asserteq(*array_get(sut, int, -2), one);
+      }
+
+      subdesc("Bounds checking") {
+        it("should fail on empty arrays") {
+          asserteq(array_get(sut, int, -1), null);
+          asserteq(array_get(sut, int, 0), null);
+        }
+
+        it("should bound check positive indexes") {
+          array_add(sut, &one);
+          asserteq(array_get(sut, int, 15), null);
+        }
+
+        it("should bound check negative indexes") {
+          array_add(sut, &one);
+          asserteq(array_get(sut, int, -2), null);
+        }
       }
     }
   }
@@ -195,7 +219,6 @@ describe(arrays) {
     }
 
     it("Array::destroy_with_destructor calls the custom destructor") {
-      int one = 1;
       int* primitive[] = { &one };
 
       array_t* sut = array_of(1, primitive);
