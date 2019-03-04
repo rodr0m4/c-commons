@@ -165,14 +165,14 @@ int ensure_capacity(array_t* self, int capacity) {
   return 0;
 }
 
-void _shift_right_from(array_t* self, uint32_t index) {
+void _shift_right_from(array_t* self, int32_t index) {
   // We traverse from back to front because we do not want to erase information
-  for (int i = self->count; i > index; i -= 1) {
+  for (int i = self->count - 1; index <= i; i -= 1) {
     self->elements[i + 1] = self->elements[i];
   }
 }
 
-int array_insert(array_t* self, void* element, uint32_t index) {
+int array_insert(array_t* self, void* element, int32_t index) {
   if (index == self->count) {
     // We are allocating to the tail, so no defragmenting :)
     return array_add(self, element);

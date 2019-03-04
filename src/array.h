@@ -32,7 +32,7 @@ array_t* array_deep_copy(array_t* source, void* (*copier)(void*));
 
 bool_t array_is_empty(array_t* self);
 
-int array_insert(array_t* self, void* element, uint32_t index);
+int array_insert(array_t* self, void* element, int32_t index);
 int array_add(array_t* self, void* element);
 
 // index is signed so we can have access from the back of the array
