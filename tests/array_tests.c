@@ -75,7 +75,8 @@ describe(arrays) {
                  "Elements should have been copied!");
 
         // Cleanup because we do not want to leak
-        array_destroy_with_destructor(&sut, free);
+        sut->destructor = free;
+        array_destroy(&sut);
       }
     }
 
@@ -101,8 +102,7 @@ describe(arrays) {
     after_each() { array_destroy(&sut); }
 
     subdesc("Array::shallow_copy") {
-      it("should copy the whole array, including nulls at the end of the "
-         "buffer") {
+      it("should copy the whole array, including nulls at the end of the buffer") {
         array_add(sut, &one);
 
         array_t *shallow_copy = array_shallow_copy(sut);
@@ -142,7 +142,8 @@ describe(arrays) {
           }
         }
 
-        array_destroy_with_destructor(&deep_copy, free);
+        deep_copy->destructor = free;
+        array_destroy(&deep_copy);
       }
     }
 
@@ -321,16 +322,6 @@ describe(arrays) {
       array_destroy(&sut);
 
       asserteq(sut, null);
-    }
-
-    it("Array::destroy_with_destructor calls the custom destructor") {
-      int *primitive[] = {&one};
-
-      array_t *sut = array_of(1, primitive);
-
-      array_destroy_with_destructor(&sut, effectful_destructor);
-
-      assert(was_called);
     }
   }
 }

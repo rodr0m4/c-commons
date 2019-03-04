@@ -47,27 +47,19 @@ array_t* array_of(uint32_t count, void* values[]) {
   return array_from(id, count, values);
 }
 
-void array_destroy_with_destructor(array_t** ptr_to_array, void (*destructor)(void*)) {
+void array_destroy(array_t** ptr_to_array) {
   if (!ptr_to_array) return;
   array_t* self = *ptr_to_array;
   if (!self) return;
 
   for (int i = 0; i < self->count; i += 1) {
-    destructor(self->elements[i]);
+    self->destructor(self->elements[i]);
   }
 
   free(self->elements);
   free(self);
 
   *ptr_to_array = null;
-}
-
-void array_destroy(array_t** ptr_to_array) {
-  if (!ptr_to_array) return;
-  array_t* self = *ptr_to_array;
-  if (!self) return;
-
-  array_destroy_with_destructor(ptr_to_array, self->destructor);
 }
 
 // @Improvement
