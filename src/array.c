@@ -6,38 +6,38 @@
 #include "kernel.h"
 
 array_t* array_with_capacity(uint32_t capacity) {
-  array_t* this = (array_t*)malloc(sizeof(array_t));
+  array_t* self = (array_t*)malloc(sizeof(array_t));
 
-  if (!this) return null;
+  if (!self) return null;
 
-  this->capacity = capacity;
-  this->count = 0;
-  this->elements = calloc(capacity, sizeof(void*));
+  self->capacity = capacity;
+  self->count = 0;
+  self->elements = calloc(capacity, sizeof(void*));
 
-  if (!this->elements) {
-    free(this);
+  if (!self->elements) {
+    free(self);
     return null;
   }
 
-  return this;
+  return self;
 }
 
 array_t* array_empty() { return array_with_capacity(ARRAY_INITIAL_CAPACITY); }
 
 array_t* array_from(void* (*copier)(void*), uint32_t count, void* values[]) {
-  array_t* this = array_empty();
-  this->count = count;
+  array_t* self = array_empty();
+  self->count = count;
 
-  if (!this) return null;
+  if (!self) return null;
 
   void* element;
   for (int i = 0; i < count; i += 1) {
     element = values[i];
 
-    this->elements[i] = copier(element);
+    self->elements[i] = copier(element);
   }
 
-  return this;
+  return self;
 }
 
 array_t* array_of(uint32_t count, void* values[]) {
