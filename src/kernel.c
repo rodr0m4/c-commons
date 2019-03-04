@@ -1,9 +1,5 @@
 #include "kernel.h"
 
-void noop(void* _) {
+void noop(void* _) {}
 
-}
-
-void* id(void* x) {
-  return x;
-}
+void* id(void* x) { return x; }
