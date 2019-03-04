@@ -100,6 +100,47 @@ describe(arrays) {
       array_destroy(&sut);
     }
 
+    subdesc("Array::shallow_copy") {
+      it("should copy the whole array, including nulls at the end of the buffer") {
+        array_add(sut, &one);
+
+        array_t* shallow_copy = array_shallow_copy(sut);
+
+        asserteq(shallow_copy->capacity, sut->capacity);
+        asserteq(shallow_copy->count, sut->count);
+
+        for(int i = 0; i < shallow_copy->count; i += 1) {
+          asserteq(shallow_copy->elements[i], sut->elements[i]);
+        }
+
+        array_destroy(&shallow_copy);
+      }
+    }
+
+    subdesc("Array::deep_copy") {
+      it("should copy the whole array, copying the values with the given copy function") {
+        array_add(sut, &one);
+
+        array_t* deep_copy = array_deep_copy(sut, copy_int);
+
+        asserteq(deep_copy->capacity, sut->capacity);
+        asserteq(deep_copy->count, sut->count);
+
+        for(int i = 0; i < deep_copy->count; i += 1) {
+          if (!sut->elements[i]) {
+            // Element should not be in the deep copy either
+            assert(!deep_copy->elements[i]);
+          } else {
+            // The pointers are different, but the values are the same (because our copier function mallocs new memory)
+            assertneq(deep_copy->elements[i], sut->elements[i]);
+            asserteq(*((int*) deep_copy->elements[i]), *((int*) sut->elements[i]));
+          }
+        }
+
+        array_destroy_with_free(&deep_copy);
+      }
+    }
+
     subdesc("Array::is_empty") {
       it("Returns true when the array does not have elements") {
         assert(array_is_empty(sut));
@@ -213,13 +254,12 @@ describe(arrays) {
 
       it("should not execute the code on empty arrays") {
         bool_t should_be_true = true;
-
+        
         foreach(int, sut, {
           should_be_true = false;
         })
 
-        // Because the foreach was not executed, this assertion passes
-        assert(should_be_true);
+        assert(should_be_true, "The block passed to the foreach was executed on empty array!");
 
         array_add(sut, &one);
 
@@ -227,8 +267,7 @@ describe(arrays) {
           should_be_true = false;
         })
 
-        // Because there is an element in the array, the variable is modified.
-        assert(!should_be_true);
+        assert(!should_be_true, "The block passed to the foreach was not executed on non empty array!");
       }
     }
   }

@@ -24,17 +24,20 @@ void array_destroy(array_t** ptr_to_array);
 void array_destroy_with_free(array_t** ptr_to_array);
 void array_destroy_with_destructor(array_t** ptr_to_array, void(*destructor)(void*));
 
+array_t* array_shallow_copy(array_t* source);
+array_t* array_deep_copy(array_t* source, void*(*copier)(void*));
+
 bool_t array_is_empty(array_t* self);
 int array_add(array_t* self, void* element);
 
 // index is signed so we can have access from the back of the array
 void* array_raw_get(array_t* self, int32_t index);
-
 #define array_get(self, type, index) (type*) array_raw_get(self, index)
 
 // @Improvement 
 // - Find a way to not pass the block, so it can be called like foreach(...) { it }
 // - Find a way to dereference it automatically 
+// - Add something akin to each_with_index (iterators?)
 //
 // The if(true) looks dumb, but it is for generating it inside a new scope :)
 #define foreach(type, self, block) if (!array_is_empty(self)) \

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "kernel.h"
 #include "array.h"
@@ -12,6 +13,11 @@ array_t* array_with_capacity(uint32_t capacity) {
   this->capacity = capacity;
   this->count = 0;
   this->elements = calloc(capacity, sizeof(void*));
+
+  if (!this->elements) {
+    free(this);
+    return null;
+  }
 
   return this;
 }
@@ -65,6 +71,57 @@ void array_destroy_with_free(array_t** ptr_to_array) {
   array_destroy_with_destructor(ptr_to_array, free);
 }
 
+// @Improvement
+// Find a way to factor out shared code between shallow and deep copies
+// NOTE: Probably will need closures :(
+array_t* array_shallow_copy(array_t* source) {
+  array_t* copy = (array_t*) malloc(sizeof(array_t));
+
+  if (!copy) return null;
+
+  uint32_t capacity = source->capacity;
+  copy->capacity = capacity;
+  copy->count = source->count;
+
+  // We don't calloc so we traverse the source only once.
+  copy->elements = (void**) (malloc(capacity * sizeof(void*)));
+
+  if (!copy->elements) {
+    free(copy);
+    return null;
+  }
+
+  memcpy(copy->elements, source->elements, capacity);
+
+  return copy;
+}
+
+array_t* array_deep_copy(array_t* source, void*(*copier)(void*)) {
+  array_t* copy = (array_t*) malloc(sizeof(array_t));
+
+  if (!copy) return null;
+
+  uint32_t capacity = source->capacity;
+  copy->capacity = capacity;
+  copy->count = source->count;
+
+  // We don't calloc so we traverse the source only once.
+  copy->elements = (void**) (malloc(capacity * sizeof(void*)));
+
+  if (!copy->elements) {
+    free(copy);
+    return null;
+  }
+
+  for (int i = 0; i < capacity; i += 1) {
+    copy->elements[i] = 
+      i < copy->count ?
+        copier(source->elements[i]) : // We copy it
+        copy->elements[i]; // We are at the end of the array, so we just nullify the pointer
+  }
+
+  return copy;
+}
 
 bool_t array_is_empty(array_t* self) {
   return self->count == 0;
