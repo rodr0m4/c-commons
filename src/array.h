@@ -44,8 +44,7 @@ array_t* array_deep_copy(array_t* source, void* (*copier)(void*));
 /// Checks if array has no elements
 bool_t array_is_empty(array_t* self);
 
-/// @Improvement: Handle negative indexes, just like get :)
-/// Inserts an element on the given index. Prevents fragmentation
+/// Inserts an element on the given index. Prevents fragmentation. It handles negative indexes, like get
 int array_insert(array_t* self, void* element, int32_t index);
 
 /// Adds an element to the end of the array

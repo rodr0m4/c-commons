@@ -165,15 +165,17 @@ void _shift_right_from(array_t* self, int32_t index) {
 }
 
 int array_insert(array_t* self, void* element, int32_t index) {
-  if (index == self->count) {
+  int32_t real_index = index < 0 ? self->count + index + 1 : index; // Is this weird?
+  
+  if (real_index == self->count) {
     // We are allocating to the tail, so no defragmenting :)
     return array_add(self, element);
   }
 
   if (ensure_capacity(self, self->count + 1) != 0) return -1;
 
-  _shift_right_from(self, index);
-  self->elements[index] = element;
+  _shift_right_from(self, real_index);
+  self->elements[real_index] = element;
 
   return 0;
 }

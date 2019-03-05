@@ -168,22 +168,22 @@ describe(arrays) {
     }
 
     subdesc("Array:insert") {
-      it("should add the element to the given index") {
-        array_t *sut = array_empty();
+      array_t* sut;
+      before_each() {
+        sut = array_empty();
         sut->destructor = noop;
+      }
 
-        array_insert(sut, &one, 0);
-
-        asserteq(sut->elements[0], &one);
-
+      after_each() {
         array_destroy(&sut);
       }
 
-      it("should add the element to the desired index in the middle of the "
-         "array, and shifts right the tail from there") {
-        array_t *sut = array_empty();
-        sut->destructor = noop;
+      it("should add the element to the given index") {
+        array_insert(sut, &one, 0);
+        asserteq(sut->elements[0], &one);
+      }
 
+      it("should add the element to the desired index in the middle of the array, and shifts right the tail from there") {
         int three = 3;
 
         array_add(sut, &one);
@@ -194,8 +194,32 @@ describe(arrays) {
         asserteq(sut->elements[0], &three);
         asserteq(*((int *)sut->elements[1]), one);
         asserteq(sut->elements[2], &two);
+      }
 
-        array_destroy(&sut);
+      it("should handle negative indexes in the tail") {
+        int three = 3;
+
+        array_add(sut, &one);
+        array_add(sut, &two);
+
+        array_insert(sut, &three, -1);
+
+        asserteq(sut->elements[0], &one);
+        asserteq(sut->elements[1], &two);
+        asserteq(sut->elements[2], &three);
+      }
+
+      it("should handle negative indexes everywhere else") {
+        int three = 3;
+
+        array_add(sut, &one);
+        array_add(sut, &two);
+
+        array_insert(sut, &three, -2);
+
+        asserteq(sut->elements[0], &one);
+        asserteq(sut->elements[1], &three);
+        asserteq(sut->elements[2], &two);
       }
     }
 
