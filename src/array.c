@@ -13,6 +13,7 @@ array_t* array_with_capacity(uint32_t capacity) {
   self->capacity = capacity;
   self->count = 0;
   self->elements = calloc(capacity, sizeof(void*));
+  self->copier = ARRAY_DEFAULT_COPIER;
   self->destructor = ARRAY_DEFAULT_DESTRUCTOR;
 
   if (!self->elements) {
@@ -29,6 +30,7 @@ array_t* array_from(void* (*copier)(void*), uint32_t count, void* values[]) {
   array_t* self = array_empty();
   
   self->count = count;
+  self->copier = copier;
   self->destructor = ARRAY_DEFAULT_DESTRUCTOR;
 
   if (!self) return null;
@@ -196,8 +198,8 @@ void* array_raw_get(array_t* self, int32_t index) {
 
   // @Improvement
   // Optimize this (bounds checking will always be slow tho)
-  if (self->count == 0 || index > 0 && (index > self->count) ||
-      index < 0 && (index * -1 > self->count)) {
+  if (self->count == 0 || (index > 0 && index > self->count) ||
+      (index < 0 && index * -1 > self->count)) {
     // Out of bounds
     return null;
   }

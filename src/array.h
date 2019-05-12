@@ -13,12 +13,14 @@ typedef struct array_adt {
   uint32_t count;     // Number of elements present in the array
 
   void (*destructor)(void*); // Element destructor, will default to ARRAY_DEFAULT_DESTRUCTOR
+  void* (*copier)(void*);  // Function used to copy (when creating new arrays), will default to ARRAY_DEFAULT_COPIER
 
   void** elements;  // Backing buffer
 } array_t;
 
 #define ARRAY_INITIAL_CAPACITY 32
 #define ARRAY_DEFAULT_DESTRUCTOR free
+#define ARRAY_DEFAULT_COPIER (void*(*)(void*)) id
 
 /// Creates an empty array, with capacity ARRAY_INITIAL_CAPACITY and destructor ARRAY_DEFAULT_DESTRUCTOR
 array_t* array_empty();
@@ -26,7 +28,7 @@ array_t* array_empty();
 /// Creates an array with the given elements, does not copy them
 array_t* array_of(uint32_t count, void* values[]);
 
-/// Creates an array with the given elements, copies them with the given copier function
+/// Creates an array with the given elements, copies them with the given copier function (and sets it as the copier)
 array_t* array_from(void* (*copier)(void*), uint32_t count, void* values[]);
 
 /// Creates an empty array with the given capacity and destructor ARRAY_DEFAULT_CONSTRUCTOR

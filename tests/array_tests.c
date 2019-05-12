@@ -37,6 +37,7 @@ describe(arrays) {
 
     subdesc("Array::empty") {
       it("Creates an empty array, with capacity of 32") {
+        asserteq(sut->copier, ARRAY_DEFAULT_COPIER);
         asserteq(sut->count, 0);
         asserteq(sut->capacity, 32);
       }
@@ -50,7 +51,7 @@ describe(arrays) {
         // (AKA fat pointer :P)
         int *primitive[] = {&one};
 
-        array_t *sut = array_of(1, primitive);
+        array_t *sut = array_of(1, (void**) primitive);
         sut->destructor = noop;
 
         asserteq(sut->count, 1);
@@ -61,11 +62,13 @@ describe(arrays) {
     }
 
     subdesc("Array::from") {
-      it("Creates the array copying the given elements") {
+      it("Creates the array copying the given elements, and assigns its copier") {
         int *primitive[] = {&one, &two};
+        void*(*copier)(void*) = (void*(*)(void*)) copy_int;
 
-        array_t *sut = array_from(copy_int, 2, primitive);
+        array_t *sut = array_from(copier, 2, (void**) primitive);
 
+        asserteq(sut->copier, copier, "Providen copier should be set");
         asserteq(sut->count, 2);
         assertneq(sut->elements[0], &one, "Elements should have been copied!");
         asserteq(*((int *)sut->elements[0]), one,
@@ -124,7 +127,7 @@ describe(arrays) {
          "function") {
         array_add(sut, &one);
 
-        array_t *deep_copy = array_deep_copy(sut, copy_int);
+        array_t *deep_copy = array_deep_copy(sut, (void*(*)(void*))copy_int);
 
         asserteq(deep_copy->capacity, sut->capacity);
         asserteq(deep_copy->count, sut->count);
