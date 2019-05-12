@@ -64,6 +64,27 @@ void array_destroy(array_t** ptr_to_array) {
   *ptr_to_array = null;
 }
 
+// array_t* array_copy(array_t* source) {
+//   array_t* copy = array_with_capacity(source->capacity);
+
+//   int i;
+//   bool_t did_fail = false;
+//   for (i = 0; i < source->count; i += 1) {
+//     int result = array_insert(copy, source->copier(array_raw_get(source, i)), i);
+
+//     if (result != 0) {
+//       did_fail = true;
+//       break;
+//     }
+//   }
+
+//   if (did_fail) {
+//     array_destroy(&copy);
+//   }
+
+//   return copy;
+// }
+
 // @Improvement
 // Find a way to factor out shared code between shallow and deep copies
 // NOTE: Probably will need closures :(

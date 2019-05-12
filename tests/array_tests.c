@@ -17,10 +17,6 @@ int *copy_int(int *payload) {
   return new_int;
 }
 
-// Find a better way to mock?
-bool_t was_called = false;
-void effectful_destructor(void *x) { was_called = true; }
-
 int one = 1;
 int two = 2;
 
@@ -103,6 +99,19 @@ describe(arrays) {
     }
 
     after_each() { array_destroy(&sut); }
+
+    // subdesc("Array::copy") {
+    //   it("should copy the whole array, using the given copy function") {
+    //     asserteq(sut->copier, ARRAY_DEFAULT_COPIER);
+    //     array_add(sut, &one);
+
+    //     array_t* copy = array_copy(sut);
+
+    //     asserteq(array_get(copy, int*, 0), &one);
+
+    //     array_destroy(&copy);
+    //   }
+    // }
 
     subdesc("Array::shallow_copy") {
       it("should copy the whole array, including nulls at the end of the buffer") {

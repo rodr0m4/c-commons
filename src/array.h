@@ -37,6 +37,9 @@ array_t* array_with_capacity(uint32_t capacity);
 /// Destroys the array, calling it's destructor on each element
 void array_destroy(array_t** ptr_to_array);
 
+/// Makes a copy of the array, using the copier
+// array_t* array_copy(array_t* source);
+
 /// Makes a copy of the array, only copying references
 array_t* array_shallow_copy(array_t* source);
 
